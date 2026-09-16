@@ -2,123 +2,57 @@
 <html lang="pt">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Milando AI - Ilimitado</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Milando AI</title>
 <style>
-body{background:#070707;color:#fff;font-family:Arial;padding:12px;margin:0}
-h1{text-align:center;color:#00ff88;font-size:36px;margin:10px}
-.sub{text-align:center;color:#999;margin-bottom:15px}
-.card{background:#121212;border:1px solid #222;border-radius:18px;padding:18px;max-width:650px;margin:12px auto}
-label{color:#00ff88;font-weight:bold;margin:12px 0 6px;display:block}
-input,textarea,select{width:100%;padding:13px;border-radius:10px;border:0;background:#1e1e1e;color:#fff;box-sizing:border-box;margin-bottom:8px}
-textarea{min-height:90px}
-.list{display:flex;flex-wrap:wrap;gap:7px;margin:5px 0 10px}
-.bubble{background:#222;border:1px solid #333;padding:7px 12px;border-radius:20px;font-size:13px;display:flex;align-items:center;gap:6px}
-.bubble b{color:#00ff88}
-.bubble i{cursor:pointer;color:#ff4444;font-style:normal;font-weight:bold}
-.btnAdd{background:#222;color:#00ff88;border:1px dashed #00ff88;padding:8px 14px;border-radius:20px;cursor:pointer;font-size:13px}
-input[type=file]{background:#000;border:1px dashed #00ff88;padding:20px;text-align:center}
-video{width:100%;border-radius:14px;margin-top:10px;max-height:300px;background:#000}
-button.main{width:100%;padding:18px;background:linear-gradient(90deg,#00ff88,#00ccff);border:0;border-radius:14px;font-weight:bold;font-size:19px;color:#000;margin-top:15px;cursor:pointer}
-#out{display:none;background:#000;border:2px solid #00ff88;border-radius:16px;padding:20px;margin-top:20px}
-.progress{height:8px;background:#222;border-radius:10px;overflow:hidden;margin:10px 0}
-.bar{height:100%;width:0%;background:linear-gradient(90deg,#00ff88,#00ccff);transition:0.3s}
+body{font-family:Arial;background:#0b1020;color:white;text-align:center;padding:30px}
+h1{color:#42a5ff;font-size:40px}
+.card{background:#151f3d;padding:25px;margin:20px auto;border-radius:15px;max-width:500px}
+button{background:#1683ff;color:white;border:0;padding:14px 25px;border-radius:10px;font-size:16px}
+input,textarea{width:90%;padding:14px;margin:10px;border-radius:8px}
+textarea{height:150px}
+#resultado{margin:20px;padding:20px;background:#151f3d;border-radius:10px}
 </style>
 </head>
 <body>
-<h1>MILANDO AI</h1>
-<div class="sub">Ilimitado - Envia teu vídeo cru, a IA faz a magia</div>
+
+<h1>Milando AI</h1>
+<p>Cria filmes, séries e desenhos animados com IA.</p>
 
 <div class="card">
-<label>📤 1. Envia teu vídeo não editado</label>
-<input type="file" id="vid" accept="video/*" onchange="previewVideo(this)">
-<video id="prev" controls style="display:none"></video>
-
-<label>🎬 2. Ideia do filme</label>
-<textarea id="ideia" placeholder="Ex: Começa com o herói correndo na rua, depois aparece o vilão..."></textarea>
-
-<label>🦸 Heróis (ilimitado) - Escreve e clica Adicionar</label>
-<div style="display:flex;gap:8px"><input id="inHeroi" placeholder="Nome do herói..."><button class="btnAdd" onclick="add('heroi')">+ ADD</button></div>
-<div class="list" id="listHeroi"></div>
-
-<label>👹 Vilões (ilimitado)</label>
-<div style="display:flex;gap:8px"><input id="inVilao" placeholder="Nome do vilão..."><button class="btnAdd" onclick="add('vilao')">+ ADD</button></div>
-<div class="list" id="listVilao"></div>
-
-<label>🌍 Cenários (ilimitado)</label>
-<div style="display:flex;gap:8px"><input id="inCenario" placeholder="Ex: Luanda à noite, com chuva..."><button class="btnAdd" onclick="add('cenario')">+ ADD</button></div>
-<div class="list" id="listCenario"></div>
-
-<label>✨ Efeitos que queres (escreve tudo)</label>
-<textarea id="efeitos" placeholder="Ex: Quando o herói pula, adiciona voo + laser nos olhos + explosão atrás + câmera lenta + música épica... Fala quem é quem no vídeo: o de camisa vermelha é o herói, o de preto é o vilão..."></textarea>
-
-<button class="main" onclick="gerarFinal()">🎬 GERAR FILME PERFEITO</button>
-
-<div id="out">
-<div style="color:#00ff88;font-weight:bold">🔄 Processando teu vídeo com IA...</div>
-<div class="progress"><div class="bar" id="bar"></div></div>
-<div id="log" style="font-size:13px;color:#aaa"></div>
-<div id="final" style="margin-top:15px"></div>
+<h2>🎬 Criar Filme</h2>
+<button onclick="criar('Filme')">Começar</button>
 </div>
+
+<div class="card">
+<h2>📺 Criar Série</h2>
+<button onclick="criar('Série')">Começar</button>
 </div>
+
+<div class="card">
+<h2>🦸 Criar Desenho</h2>
+<button onclick="criar('Desenho')">Começar</button>
+</div>
+
+<div id="resultado"></div>
 
 <script>
-let dados={heroi:[],vilao:[],cenario:[],videoFile:null}
-function add(tipo){
-let input=document.getElementById('in'+tipo.charAt(0).toUpperCase()+tipo.slice(1))
-let v=input.value.trim()
-if(!v) return
-dados[tipo].push(v)
-input.value=''
-render(tipo)
+function criar(tipo){
+document.getElementById("resultado").innerHTML=
+"<h2>Milando AI - "+tipo+"</h2>"+
+"<input id='nome' placeholder='Nome do projeto'>"+
+"<textarea id='ideia' placeholder='Escreve a tua ideia'></textarea>"+
+"<br><button onclick='gerar()'>Gerar projeto</button>";
 }
-function render(tipo){
-let div=document.getElementById('list'+tipo.charAt(0).toUpperCase()+tipo.slice(1))
-div.innerHTML=''
-dados[tipo].forEach((n,i)=>{
-div.innerHTML+=`<div class="bubble"><b>${n}</b> <i onclick="dados['${tipo}'].splice(${i},1);render('${tipo}')">X</i></div>`
-})
-}
-function previewVideo(inp){
-let f=inp.files[0]
-if(!f) return
-dados.videoFile=f
-let v=document.getElementById('prev')
-v.src=URL.createObjectURL(f)
-v.style.display='block'
-}
-function gerarFinal(){
-let ideia=document.getElementById('ideia').value
-let fx=document.getElementById('efeitos').value
-if(!dados.videoFile){alert('Envia primeiro teu vídeo!');return}
-if(!fx &&!ideia){alert('Escreve quem é quem e os efeitos que queres!');return}
-let out=document.getElementById('out')
-out.style.display='block'
-let bar=document.getElementById('bar')
-let log=document.getElementById('log')
-let steps=['Analisando vídeo cru...','Detectando pessoas: '+dados.heroi.join(', ')+' | '+dados.vilao.join(', ')+'...','Aplicando cenários: '+dados.cenario.join(', ')+'...','Adicionando efeitos: '+fx.slice(0,60)+'...','Renderizando em 4K com IA Milando...','Finalizando!']
-let p=0
-let iv=setInterval(()=>{
-if(p>=steps.length){clearInterval(iv);mostrarFinal();return}
-bar.style.width=((p+1)/steps.length*100)+'%'
-log.innerHTML+='✅ '+steps[p]+'<br>'
-p++
-},800)
-}
-function mostrarFinal(){
-let v=document.getElementById('prev').src
-let final=document.getElementById('final')
-final.innerHTML=`
-<div style="color:#00ff88;font-size:20px;font-weight:bold">🎉 TEU FILME ESTÁ PRONTO!</div><br>
-<video src="${v}" controls style="width:100%;border-radius:12px"></video><br><br>
-<b>Heróis:</b> ${dados.heroi.join(', ')||'Detectado automaticamente'}<br>
-<b>Vilões:</b> ${dados.vilao.join(', ')||'Detectado automaticamente'}<br>
-<b>Cenários aplicados:</b> ${dados.cenario.join(', ')}<br>
-<b>Efeitos:</b> ${document.getElementById('efeitos').value}<br><br>
-<div style="background:#00ff88;color:#000;padding:12px;border-radius:10px;text-align:center;font-weight:bold">⬇️ Baixar Filme Editado (Simulação Demo)<br><span style="font-size:12px">Versão PRO com IA real em breve - API de edição</span></div>
-<br><small style="color:#666">O teu vídeo original foi mantido. Nesta demo mostramos a prévia. Para edição real automática, vamos conectar com API de IA de vídeo (Runway/Pika) na próxima etapa.</small>
-`
+
+function gerar(){
+let nome=document.getElementById("nome").value;
+let ideia=document.getElementById("ideia").value;
+document.getElementById("resultado").innerHTML=
+"<h2>"+nome+"</h2><p>"+ideia+"</p>"+
+"<p>Projeto criado pelo Milando AI.</p>";
 }
 </script>
+
 </body>
 </html>
