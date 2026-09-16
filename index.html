@@ -1,25 +1,10 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width">
-<title>Milando AI</title>
-<style>
-body{background:#000;color:#fff;text-align:center;font-family:Arial;padding:20px}
-h1{color:#00ff88}
-.box{background:#111;padding:20px;border-radius:15px;margin-top:20px}
-input{width:90%;padding:15px;border-radius:10px;border:0;margin:10px}
-button{padding:15px 25px;background:#00ff88;border:0;border-radius:10px;font-weight:bold}
-</style>
-</head>
-<body>
-<h1>MILANDO AI</h1>
-<p>Plataforma para criar Filmes, Series e Desenhos Animados com IA</p>
-<div class="box">
-<input id="ideia" placeholder="Tua ideia de filme...">
-<br><br>
-<button onclick="alert('Filme '+document.getElementById('ideia').value+' criado com sucesso! Em breve com IA real')">GERAR COM IA</button>
+<button onclick="gerar()">GERAR COM IA</button>
 </div>
-<p style="margin-top:20px;color:#555">raimundomilando.github.io/Milando-AI</p>
-</body>
-</html>
+<div id="resultado" style="margin-top:20px;color:#00ff88"></div>
+<script>
+function gerar(){
+let txt=document.getElementById('ideia').value;
+if(txt==''){alert('Escreve tua ideia primeiro!');return}
+document.getElementById('resultado').innerHTML='✅ Gerando: '+txt+'<br><br>🎬 Teu filme esta sendo criado com IA! (versao demo)';
+}
+</script>
