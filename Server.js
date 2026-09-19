@@ -2,345 +2,169 @@ const express = require("express");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-const { execFile } = require("child_process");
 
 const app = express();
 
 const PORT = process.env.PORT || 3000;
 
-
-// ===============================
+// =====================================
 // PASTAS
-// ===============================
+// =====================================
 
-const publicFolder =
-  path.join(__dirname, "public");
+const uploadsFolder = path.join(__dirname, "uploads");
 
-const uploadFolder =
-  path.join(__dirname, "uploads");
-
-const outputFolder =
-  path.join(__dirname, "outputs");
-
-
-if (!fs.existsSync(uploadFolder)) {
-  fs.mkdirSync(uploadFolder, {
-    recursive: true
-  });
+if (!fs.existsSync(uploadsFolder)) {
+  fs.mkdirSync(uploadsFolder, { recursive: true });
 }
 
+// =====================================
+// CONFIGURAÇÃO DO MULTER
+// =====================================
 
-if (!fs.existsSync(outputFolder)) {
-  fs.mkdirSync(outputFolder, {
-    recursive: true
-  });
-}
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadsFolder);
+  },
 
+  filename: function (req, file, cb) {
+    const extension =
+      path.extname(file.originalname) || ".mp4";
 
-// ===============================
-// UPLOAD
-// ===============================
+    const name =
+      "video-" +
+      Date.now() +
+      extension;
 
-const storage =
-  multer.diskStorage({
+    cb(null, name);
+  }
+});
 
-    destination: function (
-      req,
-      file,
-      cb
-    ) {
+const upload = multer({
+  storage: storage,
 
-      cb(
-        null,
-        uploadFolder
-      );
+  limits: {
+    fileSize: 500 * 1024 * 1024
+  },
 
-    },
+  fileFilter: function (req, file, cb) {
 
-
-    filename: function (
-      req,
-      file,
-      cb
-    ) {
-
-      const extension =
-        path.extname(
-          file.originalname
-        );
-
-
-      const filename =
-        Date.now() +
-        "-" +
-        Math.round(
-          Math.random() * 1000000
-        ) +
-        extension;
-
-
-      cb(
-        null,
-        filename
-      );
-
+    if (file.mimetype.startsWith("video/")) {
+      cb(null, true);
+    } else {
+      cb(new Error("O ficheiro precisa ser um vídeo."));
     }
-
-  });
-
-
-const upload =
-  multer({
-
-    storage: storage,
-
-    limits: {
-
-      fileSize:
-        500 * 1024 * 1024
-
-    }
-
-  });
-
-
-// ===============================
-// MIDDLEWARE
-// ===============================
-
-app.use(
-  express.json()
-);
-
-
-app.use(
-  express.urlencoded({
-    extended: true
-  })
-);
-
-
-app.use(
-  express.static(
-    publicFolder
-  )
-);
-
-
-app.use(
-  "/outputs",
-  express.static(
-    outputFolder
-  )
-);
-
-
-// ===============================
-// PÁGINA PRINCIPAL
-// ===============================
-
-app.get(
-  "/",
-  (req, res) => {
-
-    res.sendFile(
-      path.join(
-        publicFolder,
-        "index.html"
-      )
-    );
 
   }
+});
+
+// =====================================
+// MIDDLEWARE
+// =====================================
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// =====================================
+// ARQUIVOS DO SITE
+// =====================================
+
+app.use(express.static(__dirname));
+
+// =====================================
+// PASTA DOS VÍDEOS
+// =====================================
+
+app.use(
+  "/uploads",
+  express.static(uploadsFolder)
 );
 
+// =====================================
+// ROTA PRINCIPAL
+// =====================================
 
-// ===============================
-// PROCESSAMENTO DO VÍDEO
-// ===============================
+app.get("/", function (req, res) {
+
+  res.sendFile(
+    path.join(__dirname, "index.html")
+  );
+
+});
+
+// =====================================
+// PROCESSAR VÍDEO
+// =====================================
 
 app.post(
   "/api/process-video",
   upload.single("video"),
-  (req, res) => {
+  function (req, res) {
 
     try {
 
+      // Verificar vídeo
       if (!req.file) {
 
         return res.status(400).json({
-
-          message:
-            "Nenhum vídeo foi enviado."
-
+          success: false,
+          message: "Nenhum vídeo foi enviado."
         });
 
       }
 
+      // Dados enviados pelo index.html
+      const type =
+        req.body.type || "";
+
+      const projectName =
+        req.body.projectName || "";
 
       const videoText =
         req.body.videoText || "";
 
+      // Caminho do vídeo
+      const videoUrl =
+        "/uploads/" + req.file.filename;
 
-      const inputFile =
-        req.file.path;
+      console.log("================================");
+      console.log("NOVO PROJETO");
+      console.log("Tipo:", type);
+      console.log("Projeto:", projectName);
+      console.log("Texto:", videoText);
+      console.log("Vídeo:", req.file.filename);
+      console.log("================================");
 
+      // Resposta JSON
+      return res.json({
 
-      const outputName =
-        "milando-" +
-        Date.now() +
-        ".mp4";
+        success: true,
 
+        message:
+          "Vídeo recebido com sucesso.",
 
-      const outputFile =
-        path.join(
-          outputFolder,
-          outputName
-        );
+        projectName: projectName,
 
+        type: type,
 
-      /*
-        Se o utilizador escreveu texto,
-        colocamos o texto no vídeo.
-      */
+        videoText: videoText,
 
-      let filter = null;
+        videoUrl: videoUrl
 
-
-      if (videoText) {
-
-        const safeText =
-          videoText
-            .replace(/\\/g, "\\\\")
-            .replace(/:/g, "\\:")
-            .replace(/'/g, "\\'")
-            .replace(/%/g, "\\%");
-
-
-        filter =
-          "drawtext=" +
-          "text='" +
-          safeText +
-          "'," +
-          "fontcolor=white," +
-          "fontsize=48," +
-          "x=(w-text_w)/2," +
-          "y=h-100," +
-          "box=1," +
-          "boxcolor=black@0.5," +
-          "boxborderw=10";
-
-      }
-
-
-      const ffmpegArgs = [
-
-        "-y",
-
-        "-i",
-        inputFile
-
-      ];
-
-
-      if (filter) {
-
-        ffmpegArgs.push(
-          "-vf",
-          filter
-        );
-
-      }
-
-
-      ffmpegArgs.push(
-
-        "-c:v",
-        "libx264",
-
-        "-preset",
-        "veryfast",
-
-        "-crf",
-        "23",
-
-        "-c:a",
-        "aac",
-
-        "-movflags",
-        "+faststart",
-
-        outputFile
-
-      );
-
-
-      console.log(
-        "A iniciar FFmpeg..."
-      );
-
-
-      execFile(
-        "ffmpeg",
-        ffmpegArgs,
-        (error, stdout, stderr) => {
-
-          if (error) {
-
-            console.error(
-              "FFmpeg:",
-              error
-            );
-
-
-            return res.status(500).json({
-
-              message:
-                "Não foi possível processar o vídeo. Verifica se o FFmpeg está instalado no servidor."
-
-            });
-
-          }
-
-
-          console.log(
-            "Vídeo processado!"
-          );
-
-
-          // Apagar vídeo original
-          fs.unlink(
-            inputFile,
-            () => {}
-          );
-
-
-          res.json({
-
-            success: true,
-
-            message:
-              "Vídeo processado com sucesso!",
-
-            videoUrl:
-              "/outputs/" +
-              outputName
-
-          });
-
-        }
-
-      );
-
+      });
 
     } catch (error) {
 
-      console.error(error);
+      console.error(
+        "Erro:",
+        error
+      );
 
+      return res.status(500).json({
 
-      res.status(500).json({
+        success: false,
 
         message:
-          "Erro interno do servidor."
+          "Erro interno ao processar o vídeo."
 
       });
 
@@ -349,42 +173,61 @@ app.post(
   }
 );
 
+// =====================================
+// TRATAMENTO DE ERROS DO MULTER
+// =====================================
 
-// ===============================
-// STATUS
-// ===============================
+app.use(function (err, req, res, next) {
 
-app.get(
-  "/api/status",
-  (req, res) => {
+  console.error(err);
 
-    res.json({
+  if (err instanceof multer.MulterError) {
 
-      online: true,
+    return res.status(400).json({
 
-      service:
-        "Milando AI",
+      success: false,
 
-      version:
-        "2.0.0"
+      message:
+        "Erro no envio do vídeo: " +
+        err.message
 
     });
 
   }
-);
 
+  return res.status(500).json({
 
-// ===============================
-// SERVIDOR
-// ===============================
+    success: false,
 
-app.listen(
-  PORT,
-  () => {
+    message:
+      err.message ||
+      "Erro no servidor."
 
-    console.log(
-      `Milando AI está funcionando na porta ${PORT}`
-    );
+  });
 
-  }
-);
+});
+
+// =====================================
+// INICIAR SERVIDOR
+// =====================================
+
+app.listen(PORT, function () {
+
+  console.log(
+    "================================"
+  );
+
+  console.log(
+    "🤖 Milando AI iniciado!"
+  );
+
+  console.log(
+    "Servidor na porta:",
+    PORT
+  );
+
+  console.log(
+    "================================"
+  );
+
+});
