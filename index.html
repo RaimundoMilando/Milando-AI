@@ -1,768 +1,466 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Milando AI</title>
+  <title>Milando AI</title>
 
-<style>
-* {
-  box-sizing: border-box;
-}
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
 
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #07111f;
-  color: white;
-}
+    body {
+      background: #0b0b0f;
+      color: white;
+      min-height: 100vh;
+    }
 
-header {
-  background: linear-gradient(135deg, #0b1f38, #1268a3);
-  padding: 25px 15px;
-  text-align: center;
-}
+    header {
+      background: #15151c;
+      padding: 25px;
+      text-align: center;
+      border-bottom: 1px solid #292934;
+    }
 
-header h1 {
-  margin: 0;
-  font-size: 32px;
-}
+    header h1 {
+      font-size: 32px;
+    }
 
-header p {
-  color: #d7efff;
-}
+    header p {
+      color: #aaa;
+      margin-top: 8px;
+    }
 
-nav {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding: 10px;
-  background: #050c15;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
+    .container {
+      width: 92%;
+      max-width: 900px;
+      margin: 30px auto;
+    }
 
-nav button {
-  border: 0;
-  padding: 12px 16px;
-  border-radius: 10px;
-  background: #16466d;
-  color: white;
-  font-weight: bold;
-  white-space: nowrap;
-}
+    .card {
+      background: #15151c;
+      padding: 25px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      border: 1px solid #292934;
+    }
 
-nav button:hover,
-nav button.active {
-  background: #16a7ff;
-}
+    h2 {
+      margin-bottom: 18px;
+    }
 
-main {
-  max-width: 1000px;
-  margin: auto;
-  padding: 15px;
-}
+    .options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
 
-.pagina {
-  display: none;
-}
+    .option {
+      background: #20202a;
+      border: 1px solid #343442;
+      color: white;
+      padding: 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      text-align: center;
+    }
 
-.pagina.active {
-  display: block;
-}
+    .option:hover,
+    .option.active {
+      background: #30303b;
+      border-color: white;
+    }
 
-.card {
-  background: #0c2035;
-  border: 1px solid #1c4b70;
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 15px;
-}
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 7px;
+    }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 12px;
-}
+    input,
+    textarea {
+      width: 100%;
+      padding: 13px;
+      border-radius: 8px;
+      border: 1px solid #383844;
+      background: #0e0e13;
+      color: white;
+    }
 
-.box {
-  background: #081827;
-  border: 1px solid #255578;
-  padding: 15px;
-  border-radius: 12px;
-}
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
 
-input,
-select,
-textarea {
-  width: 100%;
-  padding: 12px;
-  margin-top: 7px;
-  margin-bottom: 15px;
-  border: 1px solid #376482;
-  border-radius: 9px;
-  background: #07131f;
-  color: white;
-}
+    input[type="file"] {
+      background: #20202a;
+    }
 
-textarea {
-  min-height: 100px;
-}
+    button {
+      width: 100%;
+      padding: 16px;
+      margin-top: 20px;
+      border: none;
+      border-radius: 10px;
+      background: white;
+      color: black;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
 
-label {
-  font-size: 14px;
-  color: #c4e5fa;
-}
+    button:hover {
+      opacity: 0.85;
+    }
 
-.btn {
-  border: 0;
-  border-radius: 10px;
-  padding: 13px 18px;
-  background: #159eea;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-}
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
 
-.btn:hover {
-  background: #087fc0;
-}
+    #status {
+      text-align: center;
+      margin-top: 15px;
+      color: #aaa;
+    }
 
-.status {
-  margin-top: 15px;
-  padding: 12px;
-  background: #082d40;
-  border-radius: 10px;
-  color: #9de2ff;
-}
+    #result {
+      display: none;
+      margin-top: 20px;
+      padding: 20px;
+      background: #20202a;
+      border-radius: 10px;
+    }
 
-#videoPreview {
-  width: 100%;
-  max-height: 400px;
-  border-radius: 12px;
-  margin-top: 15px;
-  display: none;
-}
+    video {
+      width: 100%;
+      margin-top: 15px;
+      border-radius: 10px;
+    }
 
-footer {
-  text-align: center;
-  padding: 30px;
-  color: #7f9bad;
-}
-</style>
+    .download {
+      display: block;
+      text-decoration: none;
+      text-align: center;
+      margin-top: 15px;
+      padding: 14px;
+      border-radius: 8px;
+      background: white;
+      color: black;
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #777;
+    }
+
+    @media (max-width: 600px) {
+      .options {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
 <header>
-<h1>🎬 MILANDO AI</h1>
-<p>Filmes • Séries • Desenhos Animados • Efeitos • Cenários</p>
+  <h1>Milando AI</h1>
+  <p>Cria e edita os teus vídeos</p>
 </header>
 
-<nav>
+<div class="container">
 
-<button class="active" onclick="abrirPagina('inicio', this)">
-🏠 Início
-</button>
+  <div class="card">
 
-<button onclick="abrirPagina('filmes', this)">
-🎬 Filmes
-</button>
+    <h2>Tipo de projeto</h2>
 
-<button onclick="abrirPagina('series', this)">
-📺 Séries
-</button>
+    <div class="options">
 
-<button onclick="abrirPagina('desenhos', this)">
-🎨 Desenhos
-</button>
+      <div class="option" data-type="filme">
+        🎬 Filme
+      </div>
 
-<button onclick="abrirPagina('video', this)">
-🤖 Vídeo AI
-</button>
+      <div class="option" data-type="serie">
+        📺 Série
+      </div>
 
-<button onclick="abrirPagina('efeitos', this)">
-✨ Efeitos
-</button>
+      <div class="option" data-type="desenho">
+        🎨 Desenho Animado
+      </div>
 
-<button onclick="abrirPagina('cenarios', this)">
-🌆 Cenários
-</button>
+      <div class="option" data-type="efeitos">
+        ✨ Efeitos
+      </div>
 
-<button onclick="abrirPagina('conta', this)">
-🔐 Minha Área
-</button>
+      <div class="option" data-type="cenarios">
+        🏙️ Cenários
+      </div>
 
-</nav>
+      <div class="option" data-type="milando-ai">
+        🤖 Milando AI
+      </div>
 
-<main>
+    </div>
 
-<!-- INÍCIO -->
-
-<section id="inicio" class="pagina active">
-
-<div class="card">
-
-<h2>🚀 Bem-vindo ao Milando AI</h2>
-
-<p>
-O centro de produção do Universo Miland.
-</p>
-
-<div class="grid">
-
-<div class="box">
-<h3>🎬 Filmes</h3>
-<p>Cria projetos de filmes e organiza as cenas.</p>
-</div>
-
-<div class="box">
-<h3>📺 Séries</h3>
-<p>Cria temporadas e episódios.</p>
-</div>
-
-<div class="box">
-<h3>🎨 Desenhos</h3>
-<p>Cria projetos de desenhos animados.</p>
-</div>
-
-<div class="box">
-<h3>✨ Efeitos</h3>
-<p>Prepara poderes e efeitos visuais.</p>
-</div>
-
-<div class="box">
-<h3>🌆 Cenários</h3>
-<p>Escolhe e prepara cenários.</p>
-</div>
-
-<div class="box">
-<h3>🤖 Vídeo AI</h3>
-<p>Envia o teu vídeo cru para preparar a edição.</p>
-</div>
-
-</div>
-
-</div>
-
-</section>
+  </div>
 
 
-<!-- FILMES -->
+  <div class="card">
 
-<section id="filmes" class="pagina">
+    <h2>Editar vídeo</h2>
 
-<div class="card">
+    <label>Nome do projeto</label>
 
-<h2>🎬 Criar Filme</h2>
+    <input
+      id="projectName"
+      type="text"
+      placeholder="Ex: Kwanza Guardião"
+    >
 
-<label>Nome do filme</label>
+    <label>Texto para colocar no vídeo</label>
 
-<input id="nomeFilme"
-placeholder="Ex.: Kwanza Guardião">
+    <textarea
+      id="videoText"
+      placeholder="Ex: KWANZA GUARDIÃO"
+    ></textarea>
 
-<label>História</label>
+    <label>Escolher vídeo</label>
 
-<textarea id="historiaFilme"
-placeholder="Escreve a história do filme"></textarea>
+    <input
+      id="video"
+      type="file"
+      accept="video/*"
+    >
 
-<label>Personagens</label>
+    <button id="processButton">
+      🚀 Processar vídeo
+    </button>
 
-<input id="personagensFilme"
-placeholder="Kwanza Guardião, Sombra Zero...">
+    <div id="status"></div>
 
-<button class="btn" onclick="criarFilme()">
-🚀 Criar Projeto
-</button>
+    <div id="result">
 
-<div id="resultadoFilme" class="status">
-Nenhum filme criado.
-</div>
+      <h3>Vídeo processado</h3>
+
+      <video
+        id="resultVideo"
+        controls>
+      </video>
+
+      <a
+        id="downloadButton"
+        class="download"
+        download>
+        ⬇️ Baixar vídeo
+      </a>
+
+    </div>
+
+  </div>
 
 </div>
-
-</section>
-
-
-<!-- SÉRIES -->
-
-<section id="series" class="pagina">
-
-<div class="card">
-
-<h2>📺 Criar Série</h2>
-
-<label>Nome da série</label>
-
-<input id="nomeSerie"
-placeholder="Ex.: Kwanza Guardião">
-
-<label>Temporada</label>
-
-<input id="temporada"
-type="number"
-value="1"
-min="1">
-
-<label>Número de episódios</label>
-
-<input id="episodios"
-type="number"
-value="10"
-min="1">
-
-<label>História da temporada</label>
-
-<textarea id="historiaSerie"
-placeholder="Escreve a história"></textarea>
-
-<button class="btn" onclick="criarSerie()">
-🚀 Criar Série
-</button>
-
-<div id="resultadoSerie" class="status">
-Nenhuma série criada.
-</div>
-
-</div>
-
-</section>
-
-
-<!-- DESENHOS -->
-
-<section id="desenhos" class="pagina">
-
-<div class="card">
-
-<h2>🎨 Desenho Animado</h2>
-
-<label>Nome do desenho</label>
-
-<input id="nomeDesenho"
-placeholder="Nome do desenho">
-
-<label>Personagens</label>
-
-<input id="personagensDesenho"
-placeholder="Personagens principais">
-
-<label>História</label>
-
-<textarea id="historiaDesenho"
-placeholder="Escreve a história"></textarea>
-
-<button class="btn" onclick="criarDesenho()">
-🚀 Criar Desenho
-</button>
-
-<div id="resultadoDesenho" class="status">
-Nenhum desenho criado.
-</div>
-
-</div>
-
-</section>
-
-
-<!-- VÍDEO AI -->
-
-<section id="video" class="pagina">
-
-<div class="card">
-
-<h2>🤖 Milando AI — Editor de Vídeo</h2>
-
-<p>
-Envia um vídeo cru e prepara as configurações da edição.
-</p>
-
-<label>Selecionar vídeo</label>
-
-<input
-id="videoInput"
-type="file"
-accept="video/*"
-onchange="carregarVideo()"
->
-
-<video id="videoPreview" controls></video>
-
-<label>Escrita no vídeo</label>
-
-<input
-id="textoVideo"
-placeholder="Ex.: MILANDO AI • KWANZA GUARDIÃO"
->
-
-<label>Estilo</label>
-
-<select id="estiloVideo">
-
-<option>Cinematográfico</option>
-<option>Super-herói</option>
-<option>Ação</option>
-<option>Trailer</option>
-<option>Desenho Animado</option>
-
-</select>
-
-<label>Qualidade</label>
-
-<select id="qualidadeVideo">
-
-<option>HD</option>
-<option>Full HD</option>
-<option>4K</option>
-
-</select>
-
-<button class="btn" onclick="prepararVideo()">
-🚀 Preparar Vídeo
-</button>
-
-<div id="resultadoVideo" class="status">
-Nenhum vídeo selecionado.
-</div>
-
-</div>
-
-</section>
-
-
-<!-- EFEITOS -->
-
-<section id="efeitos" class="pagina">
-
-<div class="card">
-
-<h2>✨ Efeitos Visuais</h2>
-
-<div class="grid">
-
-<div class="box">
-
-<h3>⚡ Poder</h3>
-
-<select id="efeitoPoder">
-
-<option>Raio Verde</option>
-<option>Energia da Natureza</option>
-<option>Energia Negra</option>
-<option>Eletricidade</option>
-<option>Fogo</option>
-<option>Gelo</option>
-
-</select>
-
-</div>
-
-<div class="box">
-
-<h3>💥 Impacto</h3>
-
-<select id="efeitoImpacto">
-
-<option>Explosão</option>
-<option>Onda de Energia</option>
-<option>Partículas</option>
-<option>Fumaça</option>
-</select>
-
-</div>
-
-</div>
-
-<button class="btn" onclick="aplicarEfeito()">
-✨ Preparar Efeito
-</button>
-
-<div id="resultadoEfeito" class="status">
-Nenhum efeito selecionado.
-</div>
-
-</div>
-
-</section>
-
-
-<!-- CENÁRIOS -->
-
-<section id="cenarios" class="pagina">
-
-<div class="card">
-
-<h2>🌆 Cenários</h2>
-
-<label>Escolher cenário</label>
-
-<select id="cenario">
-
-<option>Cidade de Cabinda</option>
-<option>Laboratório</option>
-<option>Floresta</option>
-<option>Base Secreta</option>
-<option>Cidade Futurista</option>
-<option>Zona Urbana</option>
-<option>Outro</option>
-
-</select>
-
-<label>Descrição</label>
-
-<textarea
-id="descricaoCenario"
-placeholder="Descreve o cenário..."
-></textarea>
-
-<button class="btn" onclick="prepararCenario()">
-🌆 Preparar Cenário
-</button>
-
-<div id="resultadoCenario" class="status">
-Nenhum cenário selecionado.
-</div>
-
-</div>
-
-</section>
-
-
-<!-- CONTA -->
-
-<section id="conta" class="pagina">
-
-<div class="card">
-
-<h2>🔐 Minha Área Milando AI</h2>
-
-<p>
-Aqui podes definir a tua própria palavra-passe.
-</p>
-
-<label>Nova palavra-passe</label>
-
-<input
-id="senha"
-type="password"
-placeholder="Cria a tua palavra-passe"
->
-
-<button class="btn" onclick="guardarSenha()">
-🔐 Guardar
-</button>
-
-<div id="resultadoSenha" class="status">
-Nenhuma palavra-passe configurada.
-</div>
-
-</div>
-
-</section>
-
-</main>
 
 <footer>
-Milando AI © Universo Miland
+  © 2026 Milando AI
 </footer>
 
 
 <script>
 
-function abrirPagina(id, botao) {
+let selectedType = "";
 
-document.querySelectorAll(".pagina").forEach(function(pagina) {
-pagina.classList.remove("active");
+const options =
+  document.querySelectorAll(".option");
+
+
+options.forEach(option => {
+
+  option.addEventListener("click", () => {
+
+    options.forEach(item => {
+      item.classList.remove("active");
+    });
+
+    option.classList.add("active");
+
+    selectedType =
+      option.dataset.type;
+
+  });
+
 });
 
-document.getElementById(id).classList.add("active");
 
-document.querySelectorAll("nav button").forEach(function(btn) {
-btn.classList.remove("active");
-});
-
-botao.classList.add("active");
-
-window.scrollTo(0,0);
-
-}
+const processButton =
+  document.getElementById("processButton");
 
 
-function criarFilme() {
+processButton.addEventListener(
+  "click",
+  async () => {
 
-let nome = document.getElementById("nomeFilme").value;
+    const projectName =
+      document.getElementById(
+        "projectName"
+      ).value.trim();
 
-let historia = document.getElementById("historiaFilme").value;
+    const videoText =
+      document.getElementById(
+        "videoText"
+      ).value.trim();
 
-if(nome === "") {
-alert("Escreve o nome do filme.");
-return;
-}
+    const video =
+      document.getElementById(
+        "video"
+      ).files[0];
 
-localStorage.setItem(
-"filmeMilando",
-JSON.stringify({
-nome:nome,
-historia:historia
-})
+    const status =
+      document.getElementById(
+        "status"
+      );
+
+    const result =
+      document.getElementById(
+        "result"
+      );
+
+
+    if (!selectedType) {
+
+      status.textContent =
+        "Escolhe o tipo de projeto.";
+
+      return;
+    }
+
+
+    if (!projectName) {
+
+      status.textContent =
+        "Escreve o nome do projeto.";
+
+      return;
+    }
+
+
+    if (!video) {
+
+      status.textContent =
+        "Escolhe um vídeo.";
+
+      return;
+    }
+
+
+    status.textContent =
+      "⏳ A processar o vídeo...";
+
+    processButton.disabled = true;
+
+
+    const formData =
+      new FormData();
+
+
+    formData.append(
+      "type",
+      selectedType
+    );
+
+
+    formData.append(
+      "projectName",
+      projectName
+    );
+
+
+    formData.append(
+      "videoText",
+      videoText
+    );
+
+
+    formData.append(
+      "video",
+      video
+    );
+
+
+    try {
+
+      const response =
+        await fetch(
+          "/api/process-video",
+          {
+            method: "POST",
+            body: formData
+          }
+        );
+
+
+      const data =
+        await response.json();
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          data.message ||
+          "Erro ao processar vídeo."
+        );
+
+      }
+
+
+      const resultVideo =
+        document.getElementById(
+          "resultVideo"
+        );
+
+
+      const downloadButton =
+        document.getElementById(
+          "downloadButton"
+        );
+
+
+      resultVideo.src =
+        data.videoUrl;
+
+
+      downloadButton.href =
+        data.videoUrl;
+
+
+      result.style.display =
+        "block";
+
+
+      status.textContent =
+        "✅ Vídeo processado com sucesso!";
+
+
+    } catch (error) {
+
+      status.textContent =
+        "❌ " + error.message;
+
+    }
+
+
+    processButton.disabled = false;
+
+  }
+
 );
-
-document.getElementById("resultadoFilme").innerHTML =
-"✅ Filme criado: <b>" + nome + "</b>";
-
-}
-
-
-function criarSerie() {
-
-let nome = document.getElementById("nomeSerie").value;
-
-let temporada = document.getElementById("temporada").value;
-
-let episodios = document.getElementById("episodios").value;
-
-if(nome === "") {
-alert("Escreve o nome da série.");
-return;
-}
-
-document.getElementById("resultadoSerie").innerHTML =
-"✅ Série criada: <b>" +
-nome +
-"</b><br>Temporada: " +
-temporada +
-"<br>Episódios: " +
-episodios;
-
-}
-
-
-function criarDesenho() {
-
-let nome = document.getElementById("nomeDesenho").value;
-
-if(nome === "") {
-alert("Escreve o nome do desenho.");
-return;
-}
-
-document.getElementById("resultadoDesenho").innerHTML =
-"✅ Desenho criado: <b>" + nome + "</b>";
-
-}
-
-
-function carregarVideo() {
-
-let arquivo =
-document.getElementById("videoInput").files[0];
-
-if(!arquivo) return;
-
-let video =
-document.getElementById("videoPreview");
-
-video.src =
-URL.createObjectURL(arquivo);
-
-video.style.display = "block";
-
-document.getElementById("resultadoVideo").innerHTML =
-"✅ Vídeo carregado: <b>" +
-arquivo.name +
-"</b>";
-
-}
-
-
-function prepararVideo() {
-
-let arquivo =
-document.getElementById("videoInput").files[0];
-
-if(!arquivo) {
-
-alert("Primeiro seleciona um vídeo.");
-
-return;
-
-}
-
-let texto =
-document.getElementById("textoVideo").value;
-
-let estilo =
-document.getElementById("estiloVideo").value;
-
-let qualidade =
-document.getElementById("qualidadeVideo").value;
-
-document.getElementById("resultadoVideo").innerHTML =
-"✅ Edição preparada.<br>" +
-"Estilo: <b>" + estilo + "</b><br>" +
-"Qualidade: <b>" + qualidade + "</b><br>" +
-"Texto: <b>" + (texto || "Milando AI") + "</b><br><br>" +
-"⚙️ O processamento automático do vídeo será ligado ao backend do Milando AI.";
-
-
-}
-
-
-function aplicarEfeito() {
-
-let poder =
-document.getElementById("efeitoPoder").value;
-
-let impacto =
-document.getElementById("efeitoImpacto").value;
-
-document.getElementById("resultadoEfeito").innerHTML =
-"✨ Efeito preparado:<br>" +
-"<b>" + poder + "</b> + <b>" +
-impacto + "</b>";
-
-}
-
-
-function prepararCenario() {
-
-let cenario =
-document.getElementById("cenario").value;
-
-document.getElementById("resultadoCenario").innerHTML =
-"🌆 Cenário preparado: <b>" +
-cenario +
-"</b>";
-
-}
-
-
-function guardarSenha() {
-
-let senha =
-document.getElementById("senha").value;
-
-if(senha.length < 4) {
-
-alert("A palavra-passe deve ter pelo menos 4 caracteres.");
-
-return;
-
-}
-
-localStorage.setItem(
-"milandoSenha",
-senha
-);
-
-document.getElementById("senha").value = "";
-
-document.getElementById("resultadoSenha").innerHTML =
-"✅ A tua palavra-passe foi configurada neste navegador.";
-
-}
 
 </script>
 
