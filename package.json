@@ -1,7 +1,7 @@
 {
   "name": "milando-ai",
   "version": "1.0.0",
-  "description": "Milando AI - plataforma para criação e edição de vídeos",
+  "description": "Milando AI - plataforma de criação e edição de vídeos",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
