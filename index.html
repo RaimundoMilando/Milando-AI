@@ -1,298 +1,20 @@
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Milando AI</title>
-
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-    }
-
-    body {
-      background: #0b0b0f;
-      color: white;
-      min-height: 100vh;
-    }
-
-    header {
-      background: #15151c;
-      padding: 25px;
-      text-align: center;
-      border-bottom: 1px solid #292934;
-    }
-
-    header h1 {
-      font-size: 32px;
-    }
-
-    header p {
-      color: #aaa;
-      margin-top: 8px;
-    }
-
-    .container {
-      width: 92%;
-      max-width: 900px;
-      margin: 30px auto;
-    }
-
-    .card {
-      background: #15151c;
-      padding: 25px;
-      border-radius: 15px;
-      margin-bottom: 20px;
-      border: 1px solid #292934;
-    }
-
-    h2 {
-      margin-bottom: 18px;
-    }
-
-    .options {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-
-    .option {
-      background: #20202a;
-      border: 1px solid #343442;
-      color: white;
-      padding: 16px;
-      border-radius: 10px;
-      cursor: pointer;
-      text-align: center;
-    }
-
-    .option:hover,
-    .option.active {
-      background: #30303b;
-      border-color: white;
-    }
-
-    label {
-      display: block;
-      margin-top: 15px;
-      margin-bottom: 7px;
-    }
-
-    input,
-    textarea {
-      width: 100%;
-      padding: 13px;
-      border-radius: 8px;
-      border: 1px solid #383844;
-      background: #0e0e13;
-      color: white;
-    }
-
-    textarea {
-      min-height: 120px;
-      resize: vertical;
-    }
-
-    input[type="file"] {
-      background: #20202a;
-    }
-
-    button {
-      width: 100%;
-      padding: 16px;
-      margin-top: 20px;
-      border: none;
-      border-radius: 10px;
-      background: white;
-      color: black;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button:hover {
-      opacity: 0.85;
-    }
-
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    #status {
-      text-align: center;
-      margin-top: 15px;
-      color: #aaa;
-    }
-
-    #result {
-      display: none;
-      margin-top: 20px;
-      padding: 20px;
-      background: #20202a;
-      border-radius: 10px;
-    }
-
-    video {
-      width: 100%;
-      margin-top: 15px;
-      border-radius: 10px;
-    }
-
-    .download {
-      display: block;
-      text-decoration: none;
-      text-align: center;
-      margin-top: 15px;
-      padding: 14px;
-      border-radius: 8px;
-      background: white;
-      color: black;
-      font-weight: bold;
-    }
-
-    footer {
-      text-align: center;
-      padding: 30px;
-      color: #777;
-    }
-
-    @media (max-width: 600px) {
-      .options {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
-</head>
-
-<body>
-
-<header>
-  <h1>Milando AI</h1>
-  <p>Cria e edita os teus vídeos</p>
-</header>
-
-<div class="container">
-
-  <div class="card">
-
-    <h2>Tipo de projeto</h2>
-
-    <div class="options">
-
-      <div class="option" data-type="filme">
-        🎬 Filme
-      </div>
-
-      <div class="option" data-type="serie">
-        📺 Série
-      </div>
-
-      <div class="option" data-type="desenho">
-        🎨 Desenho Animado
-      </div>
-
-      <div class="option" data-type="efeitos">
-        ✨ Efeitos
-      </div>
-
-      <div class="option" data-type="cenarios">
-        🏙️ Cenários
-      </div>
-
-      <div class="option" data-type="milando-ai">
-        🤖 Milando AI
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <div class="card">
-
-    <h2>Editar vídeo</h2>
-
-    <label>Nome do projeto</label>
-
-    <input
-      id="projectName"
-      type="text"
-      placeholder="Ex: Kwanza Guardião"
-    >
-
-    <label>Texto para colocar no vídeo</label>
-
-    <textarea
-      id="videoText"
-      placeholder="Ex: KWANZA GUARDIÃO"
-    ></textarea>
-
-    <label>Escolher vídeo</label>
-
-    <input
-      id="video"
-      type="file"
-      accept="video/*"
-    >
-
-    <button id="processButton">
-      🚀 Processar vídeo
-    </button>
-
-    <div id="status"></div>
-
-    <div id="result">
-
-      <h3>Vídeo processado</h3>
-
-      <video
-        id="resultVideo"
-        controls>
-      </video>
-
-      <a
-        id="downloadButton"
-        class="download"
-        download>
-        ⬇️ Baixar vídeo
-      </a>
-
-    </div>
-
-  </div>
-
-</div>
-
-<footer>
-  © 2026 Milando AI
-</footer>
-
-
 <script>
 
 let selectedType = "";
 
-const options =
-  document.querySelectorAll(".option");
+const options = document.querySelectorAll(".option");
 
+options.forEach(function(option) {
 
-options.forEach(option => {
+  option.addEventListener("click", function() {
 
-  option.addEventListener("click", () => {
-
-    options.forEach(item => {
+    options.forEach(function(item) {
       item.classList.remove("active");
     });
 
     option.classList.add("active");
 
-    selectedType =
-      option.dataset.type;
+    selectedType = option.dataset.type;
 
   });
 
@@ -303,166 +25,141 @@ const processButton =
   document.getElementById("processButton");
 
 
-processButton.addEventListener(
-  "click",
-  async () => {
+processButton.addEventListener("click", async function() {
 
-    const projectName =
-      document.getElementById(
-        "projectName"
-      ).value.trim();
+  const projectName =
+    document.getElementById("projectName").value.trim();
 
-    const videoText =
-      document.getElementById(
-        "videoText"
-      ).value.trim();
+  const videoText =
+    document.getElementById("videoText").value.trim();
 
-    const video =
-      document.getElementById(
-        "video"
-      ).files[0];
+  const video =
+    document.getElementById("video").files[0];
 
-    const status =
-      document.getElementById(
-        "status"
-      );
+  const status =
+    document.getElementById("status");
 
-    const result =
-      document.getElementById(
-        "result"
-      );
+  const result =
+    document.getElementById("result");
+
+  const resultVideo =
+    document.getElementById("resultVideo");
+
+  const downloadButton =
+    document.getElementById("downloadButton");
 
 
-    if (!selectedType) {
-
-      status.textContent =
-        "Escolhe o tipo de projeto.";
-
-      return;
-    }
-
-
-    if (!projectName) {
-
-      status.textContent =
-        "Escreve o nome do projeto.";
-
-      return;
-    }
-
-
-    if (!video) {
-
-      status.textContent =
-        "Escolhe um vídeo.";
-
-      return;
-    }
-
-
+  if (!selectedType) {
     status.textContent =
-      "⏳ A processar o vídeo...";
+      "⚠️ Escolhe o tipo de projeto.";
+    return;
+  }
 
-    processButton.disabled = true;
+  if (!projectName) {
+    status.textContent =
+      "⚠️ Escreve o nome do projeto.";
+    return;
+  }
+
+  if (!video) {
+    status.textContent =
+      "⚠️ Escolhe um vídeo.";
+    return;
+  }
 
 
-    const formData =
-      new FormData();
+  processButton.disabled = true;
+
+  status.textContent =
+    "⏳ A enviar o vídeo...";
 
 
-    formData.append(
-      "type",
-      selectedType
+  const formData = new FormData();
+
+  formData.append("type", selectedType);
+  formData.append("projectName", projectName);
+  formData.append("videoText", videoText);
+  formData.append("video", video);
+
+
+  try {
+
+    const response = await fetch(
+      "/api/process-video",
+      {
+        method: "POST",
+        body: formData
+      }
     );
 
 
-    formData.append(
-      "projectName",
-      projectName
-    );
+    const text = await response.text();
 
-
-    formData.append(
-      "videoText",
-      videoText
-    );
-
-
-    formData.append(
-      "video",
-      video
-    );
-
+    let data;
 
     try {
 
-      const response =
-        await fetch(
-          "/api/process-video",
-          {
-            method: "POST",
-            body: formData
-          }
-        );
+      data = JSON.parse(text);
+
+    } catch (jsonError) {
+
+      console.error(
+        "Resposta do servidor:",
+        text
+      );
+
+      throw new Error(
+        "O servidor não respondeu em JSON."
+      );
+    }
 
 
-      const data =
-        await response.json();
+    if (!response.ok) {
 
-
-      if (!response.ok) {
-
-        throw new Error(
-          data.message ||
-          "Erro ao processar vídeo."
-        );
-
-      }
-
-
-      const resultVideo =
-        document.getElementById(
-          "resultVideo"
-        );
-
-
-      const downloadButton =
-        document.getElementById(
-          "downloadButton"
-        );
-
-
-      resultVideo.src =
-        data.videoUrl;
-
-
-      downloadButton.href =
-        data.videoUrl;
-
-
-      result.style.display =
-        "block";
-
-
-      status.textContent =
-        "✅ Vídeo processado com sucesso!";
-
-
-    } catch (error) {
-
-      status.textContent =
-        "❌ " + error.message;
+      throw new Error(
+        data.message ||
+        "Erro ao processar vídeo."
+      );
 
     }
 
 
-    processButton.disabled = false;
+    if (!data.videoUrl) {
+
+      throw new Error(
+        "O servidor não enviou o vídeo."
+      );
+
+    }
+
+
+    resultVideo.src =
+      data.videoUrl;
+
+    downloadButton.href =
+      data.videoUrl;
+
+    result.style.display =
+      "block";
+
+    status.textContent =
+      "✅ Vídeo processado com sucesso!";
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    status.textContent =
+      "❌ " + error.message;
+
+  } finally {
+
+    processButton.disabled =
+      false;
 
   }
 
-);
+});
 
 </script>
-
-</body>
-</html>
